@@ -34,7 +34,8 @@ $ node index.js --help
     -t, --token [github_api_token]  Your GitHub API token
     -o, --owner [repo_owner]        The GitHub repo owner - username or org name
     -r, --repo [repo_name]          The GitHub repo name
-    -m, --milestone [number]        The repo milestone number (from the URL)
+    -m, --milestone [number]        (Optional) repo milestone number filter (from the GitHub URL)
+    --no-body                       Excludes the Issue body text
     -h, --help                      output usage information
 ```
 **Note:** For security reasons, it is **highly recommended** to avoid passing the API token on the command line - use an environment variable instead~
