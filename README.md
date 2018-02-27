@@ -7,6 +7,8 @@ This tool provides the ability to print a set of issues from a GitHub repo, in a
 
 The PDF will be written to `stdout` - capture stdout to save it.
 
+![Example Issue Card](./example-issue-card.png)
+
 ## Usage: Input parameters
 
 Usage of this tool requires a [GitHub personal API token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with `repo` scope. This value is supplied to the program via an environment variable named `GITHUB_API_TOKEN`.
@@ -14,10 +16,10 @@ Usage of this tool requires a [GitHub personal API token](https://help.github.co
 ### Environment variables
 
 Input parameters can be configured via the following input parameters (instead of command line arguments):
-- GITHUB_API_TOKEN
-- REPO_OWNER
-- REPO_NAME
-- REPO_MILESTONE
+- `GITHUB_API_TOKEN`
+- `REPO_OWNER`
+- `REPO_NAME`
+- `REPO_MILESTONE`
 
 ### Command-line parameters
 
@@ -25,7 +27,6 @@ Input parameters can be configured via the following input parameters (instead o
 $ node index.js --help
 
   Usage: index [options]
-
 
   Options:
 
