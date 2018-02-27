@@ -2,6 +2,7 @@ const PDFKit = require('pdfkit')
 const request = require('request')
 const fs = require('fs')
 const args = require('commander')
+const removeMd = require('remove-markdown')
 
 const os = require('os')
 const packageInfo = require('./package.json')
@@ -82,6 +83,8 @@ function processIssuesJson(json) {
         let cardTitle = issue.title
         let repoName = args.repo
         let issueBody = issue.body
+        issueBody = issueBody.replace(/\r/g, '') // pdfkit doesn't handle \r properly (\n is ok)
+        issueBody = removeMd(issueBody, { stripListLeaders: false })
         let issueData = {
             number: issue.number,
             title: issue.title,
