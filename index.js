@@ -18,7 +18,7 @@ args
     .option('-t, --token [github_api_token]', 'Your GitHub API token', process.env.GITHUB_API_TOKEN)
     .option('-o, --owner [repo_owner]', 'The GitHub repo owner - username or org name', process.env.REPO_OWNER)
     .option('-r, --repo [repo_name]', 'The GitHub repo name', process.env.REPO_NAME)
-    .option('-m, --milestone [number]', 'The repo milestone number (from the URL)', process.env.REPO_MILESTONE)
+    .option('-m, --milestone [number]', '(Optional) repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
     .parse(process.argv)
 
 if (!args.token) {
