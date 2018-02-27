@@ -7,7 +7,7 @@
     "test": "npm test"
   },
   "author": "Jamie Jennings <jamiemjennings@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "commander": "^2.14.1",
     "pdfkit": "^0.8.3",
