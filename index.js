@@ -19,6 +19,7 @@ args
     .option('-o, --owner [repo_owner]', 'The GitHub repo owner - username or org name', process.env.REPO_OWNER)
     .option('-r, --repo [repo_name]', 'The GitHub repo name', process.env.REPO_NAME)
     .option('-m, --milestone [number]', '(Optional) repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
+    .option('--no-body', 'Excludes the Issue body text')
     .parse(process.argv)
 
 if (!args.token) {
@@ -80,10 +81,12 @@ function processIssuesJson(json) {
         let issueNum = `#${issue.number}`
         let cardTitle = issue.title
         let repoName = args.repo
+        let issueBody = issue.body
         let issueData = {
             number: issue.number,
             title: issue.title,
-            repo: repoName
+            repo: repoName,
+            body: issueBody
         }
         newIssues.push(issueData)
     })
@@ -126,7 +129,11 @@ function createPdf(issues) {
         // back to regular opacity for header text
         pdfDoc.fillOpacity(1.0).fill('black')
         pdfDoc.font('Helvetica').fontSize(36).text(`${issueNum}: ${repoName}`).moveDown() // header title
-        pdfDoc.font('Helvetica').fontSize(72).text(cardTitle) // main text
+        pdfDoc.font('Helvetica').fontSize(72).lineGap(1).text(cardTitle) // main text
+        pdfDoc.fontSize(8).moveDown()
+        if (args.body) {
+            pdfDoc.font('Helvetica').fontSize(32).text(issue.body, {height: 250, ellipsis: '...'})
+        }
         pdfDoc.rect(borderStartX, borderStartY, borderEndX, borderEndY).stroke() // main card border box
         pdfDoc.save()
     })
