@@ -31,10 +31,11 @@ if (!args.repo) {
     throw new Error('Missing GitHub repo name!')
 }
 if (!args.milestone) {
-    throw new Error('Missing GitHub repo milestone number!')
+    console.error('No milestone number provided - all issues will be included.')
 }
 
-const URL = `https://api.github.com/repos/${args.owner}/${args.repo}/issues?milestone=${args.milestone}`
+const milestoneFilter = args.milestone ? `milestone=${args.milestone}` : ''
+const URL = `https://api.github.com/repos/${args.owner}/${args.repo}/issues?${milestoneFilter}`
 
 log(`> GET ${URL}`)
 request({
