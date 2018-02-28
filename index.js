@@ -5,13 +5,10 @@ const args = require('commander')
 const removeMd = require('remove-markdown')
 const os = require('os')
 
-const packageInfo = require('./package.json')
 const github = require('./lib/util/github')
-const osRelease = os.release()
-const lang = process.release.name
-const nodeVersion = process.version
-const platform = process.platform
-const USER_AGENT = `${packageInfo.name} v${packageInfo.version} (${lang} ${nodeVersion}; ${platform} ${osRelease})`
+const ua = require('./lib/util/useragent')
+const USER_AGENT = ua.getUserAgent()
+const packageInfo = require('./package.json')
 
 log(`${packageInfo.name} v${packageInfo.version}`)
 
