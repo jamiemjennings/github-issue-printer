@@ -3,6 +3,7 @@ const request = require('request')
 const fs = require('fs')
 const args = require('commander')
 const removeMd = require('remove-markdown')
+const querystring = require('querystring')
 
 const os = require('os')
 const packageInfo = require('./package.json')
@@ -20,6 +21,7 @@ args
     .option('-o, --owner [repo_owner]', 'The GitHub repo owner - username or org name', process.env.REPO_OWNER)
     .option('-r, --repo [repo_name]', 'The GitHub repo name', process.env.REPO_NAME)
     .option('-m, --milestone [number]', '(Optional) repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
+    .option('-l, --labels [label_list]', 'Comma-separated list of labels to filter on', process.env.REPO_LABELS)
     .option('--no-body', 'Excludes the Issue body text')
     .parse(process.argv)
 
@@ -32,12 +34,15 @@ if (!args.owner) {
 if (!args.repo) {
     throw new Error('Missing GitHub repo name!')
 }
-if (!args.milestone) {
-    console.error('No milestone number provided - all issues will be included.')
-}
 
-const milestoneFilter = args.milestone ? `milestone=${args.milestone}` : ''
-const URL = `https://api.github.com/repos/${args.owner}/${args.repo}/issues?${milestoneFilter}`
+const query = {}
+if (args.milestone) {
+    query.milestone = args.milestone
+}
+if (args.labels) {
+    query.labels = args.labels
+}
+const URL = `https://api.github.com/repos/${args.owner}/${args.repo}/issues?${querystring.stringify(query)}`
 
 log(`> GET ${URL}`)
 request({
@@ -78,6 +83,7 @@ function processIssuesJson(json) {
     if (!issues || issues.length === 0) {
         throw new Error('Error: no issues found.')
     }
+    console.error(`${issues.length} issues retrieved.`)
     issues.forEach((issue) => {
         let issueNum = `#${issue.number}`
         let cardTitle = issue.title

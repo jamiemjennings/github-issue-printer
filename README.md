@@ -35,6 +35,7 @@ $ node index.js --help
     -o, --owner [repo_owner]        The GitHub repo owner - username or org name
     -r, --repo [repo_name]          The GitHub repo name
     -m, --milestone [number]        (Optional) repo milestone number filter (from the GitHub URL)
+    -l, --labels [label_list]       Comma-separated list of labels to filter on
     --no-body                       Excludes the Issue body text
     -h, --help                      output usage information
 ```
