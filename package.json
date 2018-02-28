@@ -7,8 +7,7 @@
   "version": "0.0.1-0",
   "description": "A utility to generate PDF files from GitHub issues",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "author": "Jamie Jennings <jamiemjennings@gmail.com>",
   "license": "MIT",
   "dependencies": {
