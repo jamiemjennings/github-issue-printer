@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "8"
+sudo: required
+
+services:
+  - docker
+
+env:
+  BUILD_VERSION=$(jq -r '.version' package.json | sed s/-0$/-${TRAVIS_BUILD_NUMBER}/)
+
+before_install:
+  - echo ${BUILD_VERSION}
+  - docker build -t jamiemjennings/github-issue-printer:latest .
+  - docker tag jamiemjennings/github-issue-printer:latest jamiemjennings/github-issue-printer:${BUILD_VERSION}
+  - docker run jamiemjennings/github-issue-printer node index.js --help
+
+after_success:
+  - ./docker-push.sh
