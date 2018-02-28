@@ -3,17 +3,17 @@ const request = require('request')
 const fs = require('fs')
 const args = require('commander')
 const removeMd = require('remove-markdown')
-const querystring = require('querystring')
-
 const os = require('os')
+
 const packageInfo = require('./package.json')
+const github = require('./lib/util/github')
 const osRelease = os.release()
 const lang = process.release.name
 const nodeVersion = process.version
 const platform = process.platform
 const USER_AGENT = `${packageInfo.name} v${packageInfo.version} (${lang} ${nodeVersion}; ${platform} ${osRelease})`
 
-console.error(`${packageInfo.name} v${packageInfo.version}`)
+log(`${packageInfo.name} v${packageInfo.version}`)
 
 args
     .version(packageInfo.version)
@@ -35,19 +35,11 @@ if (!args.repo) {
     throw new Error('Missing GitHub repo name!')
 }
 
-const query = {}
-if (args.milestone) {
-    query.milestone = args.milestone
-}
-if (args.labels) {
-    query.labels = args.labels
-}
-const URL = `https://api.github.com/repos/${args.owner}/${args.repo}/issues?${querystring.stringify(query)}`
+const URL = github.getGitHubIssuesUrl(args)
 
 log(`> GET ${URL}`)
 request({
     method: 'GET',
-
     uri: URL,
     headers: {
         authorization: `token ${args.token}`,
@@ -83,7 +75,7 @@ function processIssuesJson(json) {
     if (!issues || issues.length === 0) {
         throw new Error('Error: no issues found.')
     }
-    console.error(`${issues.length} issues retrieved.`)
+    log(`${issues.length} issues retrieved.`)
     issues.forEach((issue) => {
         let issueNum = `#${issue.number}`
         let cardTitle = issue.title
