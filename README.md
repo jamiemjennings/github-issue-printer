@@ -31,13 +31,14 @@ $ node index.js --help
   Options:
 
     -V, --version                   output the version number
-    -t, --token [github_api_token]  Your GitHub API token
+    -t, --token [github_api_token]  GitHub API token
     -o, --owner [repo_owner]        The GitHub repo owner - username or org name
     -r, --repo [repo_name]          The GitHub repo name
-    -m, --milestone [number]        (Optional) repo milestone number filter (from the GitHub URL)
+    -m, --milestone [number]        Repo milestone number filter (from the GitHub URL)
     -l, --labels [label_list]       Comma-separated list of labels to filter on
-    --no-body                       Excludes the Issue body text
-    -h, --help                      output usage information
+    -i, --issues [issue_nums]       Comma-separated list of issue numbers to include
+    --no-body                       Excludes the issue body text
+    -h, --help                      Output usage information
 ```
 **Note:** For security reasons, it is **highly recommended** to avoid passing the API token on the command line - use an environment variable instead~
 

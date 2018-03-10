@@ -11,7 +11,9 @@
   "author": "Jamie Jennings <jamiemjennings@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.14.1",
+    "async": "^2.6.0",
+    "commander": "^2.15.0",
+    "lodash": "^4.17.5",
     "pdfkit": "^0.8.3",
     "remove-markdown": "^0.2.2",
     "request": "^2.83.0"
