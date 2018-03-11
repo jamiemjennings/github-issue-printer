@@ -1,6 +1,8 @@
 const request = require('request')
 const args = require('commander')
 const removeMd = require('remove-markdown')
+const async = require('async')
+const _ = require('lodash')
 
 const github = require('./lib/util/github')
 const ua = require('./lib/util/useragent')
@@ -11,14 +13,15 @@ const packageInfo = require('./package.json')
 log(`${packageInfo.name} v${packageInfo.version}`)
 
 args
-    .version(packageInfo.version)
-    .option('-t, --token [github_api_token]', 'Your GitHub API token', process.env.GITHUB_API_TOKEN)
-    .option('-o, --owner [repo_owner]', 'The GitHub repo owner - username or org name', process.env.REPO_OWNER)
-    .option('-r, --repo [repo_name]', 'The GitHub repo name', process.env.REPO_NAME)
-    .option('-m, --milestone [number]', '(Optional) repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
-    .option('-l, --labels [label_list]', 'Comma-separated list of labels to filter on', process.env.REPO_LABELS)
-    .option('--no-body', 'Excludes the Issue body text')
-    .parse(process.argv)
+  .version(packageInfo.version)
+  .option('-t, --token [github_api_token]', 'Your GitHub API token', process.env.GITHUB_API_TOKEN)
+  .option('-o, --owner [repo_owner]', 'The GitHub repo owner - username or org name', process.env.REPO_OWNER)
+  .option('-r, --repo [repo_name]', 'The GitHub repo name', process.env.REPO_NAME)
+  .option('-m, --milestone [number]', 'Repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
+  .option('-l, --labels [label_list]', 'Comma-separated list of labels to filter on', process.env.REPO_LABELS)
+  .option('-i, --issues [issue_nums]', 'Comma-separated list of issue numbers to include', process.env.REPO_ISSUES)
+  .option('--no-body', 'Excludes the Issue body text')
+  .parse(process.argv)
 
 if (!args.token) {
   throw new Error('Error: Missing GitHub API token!')
@@ -30,43 +33,72 @@ if (!args.repo) {
   throw new Error('Missing GitHub repo name!')
 }
 
-const URL = github.getGitHubIssuesUrl(args)
+let URL
+if (args.issues) {
+  let issuesJson = []
+  async.each(args.issues.split(','), (issueNum, asyncCb) => {
+    URL = github.getGitHubIssueUrl(_.merge(args, { issueNum }))
+    getIssuesJson(URL, (err, responseBody) => {
+      if (err) {
+        return asyncCb(err)
+      }
+      issuesJson.push(responseBody)
+      asyncCb()
+    })
+  }, (err) => {
+    if (err) {
+      log(err)
+      process.exit(1)
+    }
+    processIssuesJson(issuesJson)
+  })
+} else {
+  URL = github.getGitHubIssuesQueryUrl(args)
+  getIssuesJson(URL, (err, responseBody) => {
+    if (err) {
+      log(err)
+      process.exit(1)
+    }
+    processIssuesJson(responseBody)
+  })
+}
 
-log(`> GET ${URL}`)
-request({
-  method: 'GET',
-  uri: URL,
-  headers: {
-    authorization: `token ${args.token}`,
-    'user-agent': USER_AGENT
-  }
-},
-(err, res, body) => {
-  log(`< ${res.statusCode}`)
-  if (err) {
-    log(err)
-    throw err
-  }
-  if (res.statusCode === 403) {
-    log('Error: Authentication failed')
-    log(body)
-    process.exit(1)
-  } else if (res.statusCode === 422) {
-    log(`Error 422: check that your filter selection is valid for this repository.`)
-    log(body)
-    process.exit(1)
-  } else if (res.statusCode !== 200) {
-    log(`Error: unexpected status: ${res.statusCode}`)
-    log(body)
-    process.exit(1)
-  }
-  processIssuesJson(body)
-})
+function getIssuesJson (URL, callback) {
+  log(`> GET ${URL}`)
+  request({
+    method: 'GET',
+    uri: URL,
+    json: true,
+    headers: {
+      authorization: `token ${args.token}`,
+      'user-agent': USER_AGENT
+    }
+  },
+  (err, res, body) => {
+    log(`< ${res.statusCode}`)
+    if (err) {
+      log(err)
+      throw err
+    }
+    if (res.statusCode === 403) {
+      log('Error: Authentication failed')
+      log(body)
+      process.exit(1)
+    } else if (res.statusCode === 422) {
+      log(`Error 422: check that your filter selection is valid for this repository.`)
+      log(body)
+      process.exit(1)
+    } else if (res.statusCode !== 200) {
+      log(`Error: unexpected status: ${res.statusCode}`)
+      log(body)
+      process.exit(1)
+    }
+    callback(null, body)
+  })
+}
 
-function processIssuesJson (json) {
-  const issues = JSON.parse(json)
+function processIssuesJson (issues) {
   const newIssues = []
-
   if (!issues || issues.length === 0) {
     throw new Error('Error: no issues found.')
   }
