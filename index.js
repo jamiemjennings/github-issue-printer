@@ -9,6 +9,7 @@ const ua = require('./lib/util/useragent')
 const pdf = require('./lib/util/pdf')
 const USER_AGENT = ua.getUserAgent()
 const packageInfo = require('./package.json')
+const emojiStrip = require('emoji-strip')
 
 log(`${packageInfo.name} v${packageInfo.version}`)
 
@@ -110,9 +111,9 @@ function processIssuesJson (issues) {
     issueBody = removeMd(issueBody, { stripListLeaders: false })
     let issueData = {
       number: issue.number,
-      title: issue.title,
+      title: emojiStrip(issue.title).trim(),
       repo: repoName,
-      body: issueBody
+      body: emojiStrip(issueBody).trim()
     }
     newIssues.push(issueData)
   })
