@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/jamiemjennings/github-issue-printer"
   },
-  "version": "0.0.1-0",
+  "version": "0.0.2-0",
   "description": "A utility to generate PDF files from GitHub issues",
   "main": "index.js",
   "scripts": {},
