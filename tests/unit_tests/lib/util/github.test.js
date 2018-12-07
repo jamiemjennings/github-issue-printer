@@ -1,6 +1,6 @@
 /* eslint-env node, mocha */
 const assert = require('chai').assert
-const github = require('../../../lib/util/github')
+const github = require.main.require('lib/util/github')
 
 describe('GitHub util', function () {
   var invalidOptionsTests = [
