@@ -64,7 +64,7 @@ function processIssuesList () {
   })
 }
 
-function processIssuesByQuery() {
+function processIssuesByQuery () {
   URL = github.getGitHubIssuesQueryUrl(args)
   getIssuesJson(URL, (err, responseBody) => {
     if (err) {
@@ -76,7 +76,7 @@ function processIssuesByQuery() {
 }
 
 async function processProjectColumnUrl (bearerToken, url) {
-  let columnId = url.split("#column-")[1]
+  let columnId = url.split('#column-')[1]
   let cardsUrl = `https://api.github.com/projects/columns/${columnId}/cards`
   let cardsBody = await _httpGet(bearerToken, cardsUrl, {'accept': 'application/vnd.github.inertia-preview+json'})
 
@@ -89,7 +89,7 @@ async function processProjectColumnUrl (bearerToken, url) {
       cards.push({
         number: cardContent.number,
         title: sanitizeText(cardContent.title),
-        repo: cardContent.repository_url.substring(cardContent.repository_url.lastIndexOf("/")+1),
+        repo: cardContent.repository_url.substring(cardContent.repository_url.lastIndexOf('/') + 1),
         body: sanitizeText(cardContent.body)
       })
     }
