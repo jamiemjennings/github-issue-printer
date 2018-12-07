@@ -1,14 +1,16 @@
-const request = require('request-promise-native')
+const request = require('request')
 const args = require('commander')
 const async = require('async')
 const _ = require('lodash')
 
 const github = require('./lib/util/github')
-const ua = require('./lib/util/useragent')
 const pdf = require('./lib/util/pdf')
+const ua = require('./lib/util/useragent')
 const USER_AGENT = ua.getUserAgent()
 const packageInfo = require('./package.json')
 const { sanitizeText } = require('./lib/util/text')
+const { _httpGet } = require('./lib/util/http')
+const log = require('./lib/util/logger')
 
 log(`${packageInfo.name} v${packageInfo.version}`)
 
@@ -36,7 +38,7 @@ if ((_.isEmpty(args.repo) || _.isEmpty(args.owner)) && _.isEmpty(args.projectCol
 let URL
 if (args.projectColumn) {
   processProjectColumnUrl(args.token, args.projectColumn)
-} else if (args) {
+} else if (args.issues) {
   processIssuesList()
 } else {
   processIssuesByQuery()
@@ -71,39 +73,6 @@ function processIssuesByQuery() {
     }
     processIssuesJson(responseBody)
   })
-}
-
-async function _httpGet (bearerToken, url, customHeaders = {}) {
-  log(`> GET ${url}`)
-  let res = await request({
-    method: 'GET',
-    url: url,
-    json: true,
-    resolveWithFullResponse: true,
-    headers: _.merge({
-      authorization: `token ${bearerToken}`,
-      'user-agent': USER_AGENT
-    }, customHeaders)
-  })
-  log(`< ${res.statusCode}`)
-  if (res.err) {
-    log(res.err)
-    throw res.err
-  }
-  if (res.statusCode === 403) {
-    log('Error: Authentication failed')
-    log(res.body)
-    process.exit(1)
-  } else if (res.statusCode === 422) {
-    log(`Error 422: check that your filter selection is valid for this repository.`)
-    log(res.body)
-    process.exit(1)
-  } else if (res.statusCode !== 200) {
-    log(`Error: unexpected status: ${res.statusCode}`)
-    log(res.body)
-    process.exit(1)
-  }
-  return res.body
 }
 
 async function processProjectColumnUrl (bearerToken, url) {
@@ -182,8 +151,3 @@ function processIssuesJson (issues) {
 
   pdf.createPdf(newIssues, {renderBody: args.body})
 }
-
-function log (msg) {
-  console.error(msg)
-}
-
