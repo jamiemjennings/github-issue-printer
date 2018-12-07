@@ -1,4 +1,4 @@
-const request = require('request')
+const request = require('request-promise-native')
 const args = require('commander')
 const removeMd = require('remove-markdown')
 const async = require('async')
@@ -21,21 +21,29 @@ args
   .option('-m, --milestone [number]', 'Repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
   .option('-l, --labels [label_list]', 'Comma-separated list of labels to filter on', process.env.REPO_LABELS)
   .option('-i, --issues [issue_nums]', 'Comma-separated list of issue numbers to include', process.env.REPO_ISSUES)
-  .option('--no-body', 'Excludes the Issue body text')
+  .option('--project-column [url]', 'URL of GitHub project column to be printed', process.env.PROJECT_COLUMN_URL)
   .parse(process.argv)
 
+// verify that we have enough info to do something useful
 if (!args.token) {
-  throw new Error('Error: Missing GitHub API token!')
+  console.error()
+  console.error('Error: Missing GitHub API token!')
+  args.help() // this automatically exits
 }
-if (!args.owner) {
-  throw new Error('Missing GitHub repo owner!')
-}
-if (!args.repo) {
-  throw new Error('Missing GitHub repo name!')
+if ((_.isEmpty(args.repo) || _.isEmpty(args.owner)) && _.isEmpty(args.projectColumn)) {
+  args.help() // this automatically exits
 }
 
 let URL
-if (args.issues) {
+if (args.projectColumn) {
+  processProjectColumnUrl(args.token, args.projectColumn)
+} else if (args) {
+  processIssuesList()
+} else {
+  processIssuesByQuery()
+}
+
+function processIssuesList () {
   let issuesJson = []
   async.each(args.issues.split(','), (issueNum, asyncCb) => {
     URL = github.getGitHubIssueUrl(_.merge(args, { issueNum }))
@@ -53,7 +61,9 @@ if (args.issues) {
     }
     processIssuesJson(issuesJson)
   })
-} else {
+}
+
+function processIssuesByQuery() {
   URL = github.getGitHubIssuesQueryUrl(args)
   getIssuesJson(URL, (err, responseBody) => {
     if (err) {
@@ -62,6 +72,62 @@ if (args.issues) {
     }
     processIssuesJson(responseBody)
   })
+}
+
+async function _httpGet (bearerToken, url, customHeaders = {}) {
+  log(`> GET ${url}`)
+  let res = await request({
+    method: 'GET',
+    url: url,
+    json: true,
+    resolveWithFullResponse: true,
+    headers: _.merge({
+      authorization: `token ${bearerToken}`,
+      'user-agent': USER_AGENT
+    }, customHeaders)
+  })
+  log(`< ${res.statusCode}`)
+  if (res.err) {
+    log(res.err)
+    throw res.err
+  }
+  if (res.statusCode === 403) {
+    log('Error: Authentication failed')
+    log(res.body)
+    process.exit(1)
+  } else if (res.statusCode === 422) {
+    log(`Error 422: check that your filter selection is valid for this repository.`)
+    log(res.body)
+    process.exit(1)
+  } else if (res.statusCode !== 200) {
+    log(`Error: unexpected status: ${res.statusCode}`)
+    log(res.body)
+    process.exit(1)
+  }
+  return res.body
+}
+
+async function processProjectColumnUrl (bearerToken, url) {
+  let columnId = url.split("#column-")[1]
+  let cardsUrl = `https://api.github.com/projects/columns/${columnId}/cards`
+  let cardsBody = await _httpGet(bearerToken, cardsUrl, {'accept': 'application/vnd.github.inertia-preview+json'})
+
+  let cards = []
+  for (card of cardsBody) {
+    if (card.note) {
+      cards.push({title: sanitizeText(card.note)})
+    } else if (card.content_url) {
+      let cardContent = await _httpGet(bearerToken, card.content_url)
+      cards.push({
+        number: cardContent.number,
+        title: sanitizeText(cardContent.title),
+        repo: cardContent.repository_url.substring(cardContent.repository_url.lastIndexOf("/")+1),
+        body: sanitizeText(cardContent.body)
+      })
+    }
+  }
+
+  pdf.createPdf(cards, {renderBody: args.body})
 }
 
 function getIssuesJson (URL, callback) {
@@ -106,14 +172,11 @@ function processIssuesJson (issues) {
   log(`${issues.length} issues retrieved.`)
   issues.forEach((issue) => {
     let repoName = args.repo
-    let issueBody = issue.body
-    issueBody = issueBody.replace(/\r/g, '') // pdfkit doesn't handle \r properly (\n is ok)
-    issueBody = removeMd(issueBody, { stripListLeaders: false })
     let issueData = {
       number: issue.number,
-      title: emojiStrip(issue.title).trim(),
+      title: sanitizeText(issue.title),
       repo: repoName,
-      body: emojiStrip(issueBody).trim()
+      body: sanitizeText(issue.body)
     }
     newIssues.push(issueData)
   })
@@ -123,4 +186,11 @@ function processIssuesJson (issues) {
 
 function log (msg) {
   console.error(msg)
+}
+
+function sanitizeText (text) {
+  text = text.replace(/\r/g, '') // pdfkit doesn't handle \r properly (\n is ok)
+  text = removeMd(text, { stripListLeaders: false })
+  text = emojiStrip(text).trim()
+  return text
 }
