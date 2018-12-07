@@ -7,7 +7,9 @@
   "version": "0.0.3-0",
   "description": "A utility to generate PDF files from GitHub issues",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha tests/unit_tests/**/*.test.js --reporter spec"
+  },
   "author": "Jamie Jennings <jamiemjennings@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -19,5 +21,9 @@
     "remove-markdown": "^0.2.2",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
   }
 }

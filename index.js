@@ -1,6 +1,5 @@
 const request = require('request-promise-native')
 const args = require('commander')
-const removeMd = require('remove-markdown')
 const async = require('async')
 const _ = require('lodash')
 
@@ -9,7 +8,7 @@ const ua = require('./lib/util/useragent')
 const pdf = require('./lib/util/pdf')
 const USER_AGENT = ua.getUserAgent()
 const packageInfo = require('./package.json')
-const emojiStrip = require('emoji-strip')
+const { sanitizeText } = require('./lib/util/text')
 
 log(`${packageInfo.name} v${packageInfo.version}`)
 
@@ -188,9 +187,3 @@ function log (msg) {
   console.error(msg)
 }
 
-function sanitizeText (text) {
-  text = text.replace(/\r/g, '') // pdfkit doesn't handle \r properly (\n is ok)
-  text = removeMd(text, { stripListLeaders: false })
-  text = emojiStrip(text).trim()
-  return text
-}
