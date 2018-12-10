@@ -22,19 +22,19 @@ describe('GitHub util', function () {
       })
     })
     it('succeeds if owner & repo is specified', () => {
-      let url = github.getGitHubIssuesQueryUrl({owner: 'foobar', repo: 'fizzbuzz'})
+      let url = github.getGitHubIssuesQueryUrl({ owner: 'foobar', repo: 'fizzbuzz' })
       assert.equal(url, 'https://api.github.com/repos/foobar/fizzbuzz/issues?')
     })
     it('succeeds if owner & repo is specified with labels', () => {
-      let url = github.getGitHubIssuesQueryUrl({owner: 'foobar', repo: 'fizzbuzz', labels: 'abc'})
+      let url = github.getGitHubIssuesQueryUrl({ owner: 'foobar', repo: 'fizzbuzz', labels: 'abc' })
       assert.equal(url, 'https://api.github.com/repos/foobar/fizzbuzz/issues?labels=abc')
     })
     it('succeeds if owner & repo is specified with milestone', () => {
-      let url = github.getGitHubIssuesQueryUrl({owner: 'foobar', repo: 'fizzbuzz', milestone: 'foo'})
+      let url = github.getGitHubIssuesQueryUrl({ owner: 'foobar', repo: 'fizzbuzz', milestone: 'foo' })
       assert.equal(url, 'https://api.github.com/repos/foobar/fizzbuzz/issues?milestone=foo')
     })
     it('succeeds if owner & repo is specified with labels & milestone', () => {
-      let url = github.getGitHubIssuesQueryUrl({owner: 'foobar', repo: 'fizzbuzz', labels: 'abc,def', milestone: 'foo'})
+      let url = github.getGitHubIssuesQueryUrl({ owner: 'foobar', repo: 'fizzbuzz', labels: 'abc,def', milestone: 'foo' })
       assert.equal(url, 'https://api.github.com/repos/foobar/fizzbuzz/issues?milestone=foo&labels=abc%2Cdef')
     })
   })
@@ -50,7 +50,7 @@ describe('GitHub util', function () {
       })
     })
     it('succeeds if owner, repo & issueNum is specified', function () {
-      let url = github.getGitHubIssueUrl({owner: 'foobar', repo: 'fizzbuzz', issueNum: '3'})
+      let url = github.getGitHubIssueUrl({ owner: 'foobar', repo: 'fizzbuzz', issueNum: '3' })
       assert.equal(url, 'https://api.github.com/repos/foobar/fizzbuzz/issues/3')
     })
   })
@@ -66,7 +66,7 @@ describe('GitHub util', function () {
       })
     })
     it('succeeds if owner is specified', function () {
-      let url = github.getGitHubProjectsUrl({owner: 'foobar'})
+      let url = github.getGitHubProjectsUrl({ owner: 'foobar' })
       assert.equal(url, 'https://api.github.com/orgs/foobar/projects?status=open')
     })
   })

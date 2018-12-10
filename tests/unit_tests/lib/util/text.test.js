@@ -21,20 +21,20 @@ describe('text utils', () => {
   ]
   testCases.forEach((testCase) => {
     it(testCase.shouldThrowError
-        ? `should throw error for ${testCase.input}`
-        : `should return '${testCase.expected}' for '${testCase.input}'`,
-        (done) => {
-          try {
-            let result = sanitizeText(testCase.input)
-            assert.equal(result, testCase.expected)
-            done()
-          } catch (err) {
-            if (!testCase.shouldThrowError) {
-              throw err
-            } else {
-              done()
-            }
-          }
-        })
+      ? `should throw error for ${testCase.input}`
+      : `should return '${testCase.expected}' for '${testCase.input}'`,
+    (done) => {
+      try {
+        let result = sanitizeText(testCase.input)
+        assert.equal(result, testCase.expected)
+        done()
+      } catch (err) {
+        if (!testCase.shouldThrowError) {
+          throw err
+        } else {
+          done()
+        }
+      }
+    })
   })
 })

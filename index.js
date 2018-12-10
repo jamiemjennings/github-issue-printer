@@ -90,15 +90,15 @@ function processIssuesByQuery () {
 async function processProjectColumnUrl (bearerToken, url) {
   let columnId = url.split('#column-')[1]
   let cardsUrl = `https://api.github.com/projects/columns/${columnId}/cards`
-  let cardsBody = await httpUtil.httpGet(bearerToken, cardsUrl, {'accept': 'application/vnd.github.inertia-preview+json'}
-    ).catch((err) => {
-      throw err
-    })
+  let cardsBody = await httpUtil.httpGet(bearerToken, cardsUrl, { 'accept': 'application/vnd.github.inertia-preview+json' }
+  ).catch((err) => {
+    throw err
+  })
 
   let cards = []
   for (card of cardsBody) {
     if (card.note) {
-      cards.push({title: sanitizeText(card.note)})
+      cards.push({ title: sanitizeText(card.note) })
     } else if (card.content_url) {
       let cardContent = await httpUtil.httpGet(bearerToken, card.content_url).catch((err) => { throw err })
       cards.push({
@@ -109,7 +109,7 @@ async function processProjectColumnUrl (bearerToken, url) {
       })
     }
   }
-  pdf.createPdf(cards, {renderBody: args.body})
+  pdf.createPdf(cards, { renderBody: args.body })
 }
 
 function getIssuesJson (URL, callback) {
@@ -163,5 +163,5 @@ function processIssuesJson (issues) {
     newIssues.push(issueData)
   })
 
-  pdf.createPdf(newIssues, {renderBody: args.body})
+  pdf.createPdf(newIssues, { renderBody: args.body })
 }
