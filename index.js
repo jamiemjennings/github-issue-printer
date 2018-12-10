@@ -9,10 +9,12 @@ const ua = require('./lib/util/useragent')
 const USER_AGENT = ua.getUserAgent()
 const packageInfo = require('./package.json')
 const { sanitizeText } = require('./lib/util/text')
-const { _httpGet } = require('./lib/util/http')
+const HttpUtil = require('./lib/util/http')
 const log = require('./lib/util/logger')
 
 log(`${packageInfo.name} v${packageInfo.version}`)
+
+const httpUtil = new HttpUtil()
 
 args
   .version(packageInfo.version)
@@ -37,7 +39,17 @@ if ((_.isEmpty(args.repo) || _.isEmpty(args.owner)) && _.isEmpty(args.projectCol
 
 let URL
 if (args.projectColumn) {
-  processProjectColumnUrl(args.token, args.projectColumn)
+  // call async function from main without promise warnings
+  // https://stackoverflow.com/questions/46515764/how-can-i-use-async-await-at-the-top-level
+  (async () => {
+    try {
+      await processProjectColumnUrl(args.token, args.projectColumn)
+    } catch (err) {
+      console.log('ERROR:')
+      console.log(err)
+      process.exit(1)
+    }
+  })()
 } else if (args.issues) {
   processIssuesList()
 } else {
@@ -78,14 +90,17 @@ function processIssuesByQuery () {
 async function processProjectColumnUrl (bearerToken, url) {
   let columnId = url.split('#column-')[1]
   let cardsUrl = `https://api.github.com/projects/columns/${columnId}/cards`
-  let cardsBody = await _httpGet(bearerToken, cardsUrl, {'accept': 'application/vnd.github.inertia-preview+json'})
+  let cardsBody = await httpUtil.httpGet(bearerToken, cardsUrl, { 'accept': 'application/vnd.github.inertia-preview+json' }
+  ).catch((err) => {
+    throw err
+  })
 
   let cards = []
   for (card of cardsBody) {
     if (card.note) {
-      cards.push({title: sanitizeText(card.note)})
+      cards.push({ title: sanitizeText(card.note) })
     } else if (card.content_url) {
-      let cardContent = await _httpGet(bearerToken, card.content_url)
+      let cardContent = await httpUtil.httpGet(bearerToken, card.content_url).catch((err) => { throw err })
       cards.push({
         number: cardContent.number,
         title: sanitizeText(cardContent.title),
@@ -94,8 +109,7 @@ async function processProjectColumnUrl (bearerToken, url) {
       })
     }
   }
-
-  pdf.createPdf(cards, {renderBody: args.body})
+  pdf.createPdf(cards, { renderBody: args.body })
 }
 
 function getIssuesJson (URL, callback) {
@@ -149,5 +163,5 @@ function processIssuesJson (issues) {
     newIssues.push(issueData)
   })
 
-  pdf.createPdf(newIssues, {renderBody: args.body})
+  pdf.createPdf(newIssues, { renderBody: args.body })
 }

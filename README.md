@@ -99,3 +99,4 @@ export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
 node index.js --project-column https://github.com/jamiemjennings/example-repo/projects/1#column-3945112 > output.pdf
 ```
+
