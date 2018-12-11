@@ -84,7 +84,7 @@ npm install
 node index.js --owner jamiemjennings --repo github-issue-printer --milestone 1 > output.pdf
 ```
 
-## GitHub Projects
+## GitHub Projects: Print Column Issues
 
 The program may be used to print a set of issues from a column in a GitHub project. This option can expedite printing of physical Kanban cards for an existing GitHub Kanban board.
 
@@ -94,9 +94,20 @@ To use this option, first open the Kanban board and use the `Copy column link` o
 
 Then use the `--project-column` option with this URL, for example:
 
+
+### Using docker:
+
+```console
+export GITHUB_API_TOKEN=xxxxxxxxxxxxx
+docker run -e GITHUB_API_TOKEN -e PROJECT_COLUMN_URL=https://github.com/jamiemjennings/example-repo/projects/1#column-3945112 jamiemjennings/github-issue-printer > ~/output.pdf
+```
+
+### Using node:
+
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
 node index.js --project-column https://github.com/jamiemjennings/example-repo/projects/1#column-3945112 > output.pdf
 ```
+
 
