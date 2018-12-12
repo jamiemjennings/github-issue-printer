@@ -18,7 +18,7 @@
     "emoji-strip": "^1.0.1",
     "lodash": "^4.17.11",
     "pdfkit": "^0.8.3",
-    "remove-markdown": "^0.2.2",
+    "remove-markdown": "^0.3.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "standard": "^12.0.1"
