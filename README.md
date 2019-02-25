@@ -28,6 +28,7 @@ $ node index.js --help
     -m, --milestone [number]        Repo milestone number filter (from the GitHub URL)
     -l, --labels [label_list]       Comma-separated list of labels to filter on
     -i, --issues [issue_nums]       Comma-separated list of issue numbers to include
+    -s, --sizes                     Flag to enable size labels on cards
     --project-column                URL of a GitHub Project column from which to retrieve issues
     -h, --help                      Output usage information
 ```
@@ -47,6 +48,7 @@ Input parameters can be configured via the following input parameters (instead o
 | `REPO_LABELS`        | `--labels`
 | `REPO_ISSUES`        | `--issues`
 | `PROJECT_COLUMN_URL` | `--project-column`
+| `INCLUDE_SIZE_LABELS`| `--sizes`
 
 ## Execution
 
@@ -56,14 +58,14 @@ You may run the program via Docker as follows:
 
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
-docker run -e GITHUB_API_TOKEN -e REPO_OWNER=<OWNER> -e REPO_NAME=<REPO> -e REPO_MILESTONE=<NUM> jamiemjennings/github-issue-printer > output.pdf
+docker run -e GITHUB_API_TOKEN -e REPO_OWNER=<OWNER> -e REPO_NAME=<REPO> -e REPO_MILESTONE=<NUM> -e INCLUDE_SIZE_LABELS=true jamiemjennings/github-issue-printer > output.pdf
 ```
 
 For example:
 
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
-docker run -e GITHUB_API_TOKEN -e REPO_OWNER=jamiemjennings -e REPO_NAME=github-issue-printer -e REPO_MILESTONE=1 jamiemjennings/github-issue-printer > ~/output.pdf
+docker run -e GITHUB_API_TOKEN -e REPO_OWNER=jamiemjennings -e REPO_NAME=github-issue-printer -e REPO_MILESTONE=1 -e INCLUDE_SIZE_LABELS=true jamiemjennings/github-issue-printer > ~/output.pdf
 ```
 
 You may then open output.pdf with your preferred PDF reader to review/print.
@@ -73,7 +75,7 @@ You may then open output.pdf with your preferred PDF reader to review/print.
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
-node index.js --owner <OWNER> --repo <REPO> --milestone <NUM> > output.pdf
+node index.js --owner <OWNER> --repo <REPO> --milestone <NUM> --sizes > output.pdf
 ```
 
 For example:
@@ -81,7 +83,7 @@ For example:
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
-node index.js --owner jamiemjennings --repo github-issue-printer --milestone 1 > output.pdf
+node index.js --owner jamiemjennings --repo github-issue-printer --milestone 1 --sizes > output.pdf
 ```
 
 ## GitHub Projects: Print Column Issues
