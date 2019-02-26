@@ -16,7 +16,7 @@ log(`${packageInfo.name} v${packageInfo.version}`)
 
 const httpUtil = new HttpUtil()
 
-const SIZE_LABELS = [
+const POINTS_LABELS = [
   'XS', 'S', 'M', 'L', 'XL',
   '0', '1/2', '1', '2', '3', '5', '8', '13', '21'
 ]
@@ -29,13 +29,13 @@ args
   .option('-m, --milestone [number]', 'Repo milestone number filter (from the GitHub URL)', process.env.REPO_MILESTONE)
   .option('-l, --labels [label_list]', 'Comma-separated list of labels to filter on', process.env.REPO_LABELS)
   .option('-i, --issues [issue_nums]', 'Comma-separated list of issue numbers to include', process.env.REPO_ISSUES)
-  .option('-s, --sizes', 'Flag to enable size labels on cards')
+  .option('-p, --points', 'Flag to enable the points label on cards')
   .option('--project-column [url]', 'URL of GitHub project column to be printed', process.env.PROJECT_COLUMN_URL)
   .parse(process.argv)
 
 // flag options can't have "values" so do the environment variable setting here
-if (process.env.INCLUDE_SIZE_LABELS) {
-  args.sizes = true
+if (process.env.INCLUDE_POINTS_LABELS) {
+  args.points = true
 }
 
 // verify that we have enough info to do something useful
@@ -117,11 +117,11 @@ async function processProjectColumnUrl (bearerToken, url) {
         title: sanitizeText(cardContent.title),
         repo: cardContent.repository_url.substring(cardContent.repository_url.lastIndexOf('/') + 1),
         body: sanitizeText(cardContent.body),
-        sizeLabel: cardContent.labels.find((label) => SIZE_LABELS.includes(label.name))
+        pointsLabel: cardContent.labels.find((label) => POINTS_LABELS.includes(label.name))
       })
     }
   }
-  pdf.createPdf(cards, { renderBody: args.body, renderSizeLabels: args.sizes })
+  pdf.createPdf(cards, { renderBody: args.body, renderPointsLabels: args.points })
 }
 
 function getIssuesJson (URL, callback) {

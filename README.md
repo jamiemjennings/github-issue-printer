@@ -28,7 +28,7 @@ $ node index.js --help
     -m, --milestone [number]        Repo milestone number filter (from the GitHub URL)
     -l, --labels [label_list]       Comma-separated list of labels to filter on
     -i, --issues [issue_nums]       Comma-separated list of issue numbers to include
-    -s, --sizes                     Flag to enable size labels on cards
+    -p, --points                    Flag to enable the points label on cards
     --project-column                URL of a GitHub Project column from which to retrieve issues
     -h, --help                      Output usage information
 ```
@@ -39,16 +39,16 @@ $ node index.js --help
 
 Input parameters can be configured via the following input parameters (instead of command line arguments):
 
-| Environment Variable | Equivalent Command Line Arg
-| -------------------- | ---------------------------
-| `GITHUB_API_TOKEN`   | `--token`
-| `REPO_OWNER`         | `--owner`
-| `REPO_NAME`          | `--repo`
-| `REPO_MILESTONE`     | `--milestone`
-| `REPO_LABELS`        | `--labels`
-| `REPO_ISSUES`        | `--issues`
-| `PROJECT_COLUMN_URL` | `--project-column`
-| `INCLUDE_SIZE_LABELS`| `--sizes`
+| Environment Variable   | Equivalent Command Line Arg
+| ---------------------- | ---------------------------
+| `GITHUB_API_TOKEN`     | `--token`
+| `REPO_OWNER`           | `--owner`
+| `REPO_NAME`            | `--repo`
+| `REPO_MILESTONE`       | `--milestone`
+| `REPO_LABELS`          | `--labels`
+| `REPO_ISSUES`          | `--issues`
+| `PROJECT_COLUMN_URL`   | `--project-column`
+| `INCLUDE_POINTS_LABELS`| `--points`
 
 ## Execution
 
@@ -58,14 +58,14 @@ You may run the program via Docker as follows:
 
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
-docker run -e GITHUB_API_TOKEN -e REPO_OWNER=<OWNER> -e REPO_NAME=<REPO> -e REPO_MILESTONE=<NUM> -e INCLUDE_SIZE_LABELS=true jamiemjennings/github-issue-printer > output.pdf
+docker run -e GITHUB_API_TOKEN -e REPO_OWNER=<OWNER> -e REPO_NAME=<REPO> -e REPO_MILESTONE=<NUM> -e INCLUDE_POINTS_LABELS=true jamiemjennings/github-issue-printer > output.pdf
 ```
 
 For example:
 
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
-docker run -e GITHUB_API_TOKEN -e REPO_OWNER=jamiemjennings -e REPO_NAME=github-issue-printer -e REPO_MILESTONE=1 -e INCLUDE_SIZE_LABELS=true jamiemjennings/github-issue-printer > ~/output.pdf
+docker run -e GITHUB_API_TOKEN -e REPO_OWNER=jamiemjennings -e REPO_NAME=github-issue-printer -e REPO_MILESTONE=1 -e INCLUDE_POINTS_LABELS=true jamiemjennings/github-issue-printer > ~/output.pdf
 ```
 
 You may then open output.pdf with your preferred PDF reader to review/print.
@@ -75,7 +75,7 @@ You may then open output.pdf with your preferred PDF reader to review/print.
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
-node index.js --owner <OWNER> --repo <REPO> --milestone <NUM> --sizes > output.pdf
+node index.js --owner <OWNER> --repo <REPO> --milestone <NUM> --points > output.pdf
 ```
 
 For example:
@@ -83,7 +83,7 @@ For example:
 ```console
 export GITHUB_API_TOKEN=xxxxxxxxxxxxx
 npm install
-node index.js --owner jamiemjennings --repo github-issue-printer --milestone 1 --sizes > output.pdf
+node index.js --owner jamiemjennings --repo github-issue-printer --milestone 1 --points > output.pdf
 ```
 
 ## GitHub Projects: Print Column Issues
@@ -112,8 +112,8 @@ npm install
 node index.js --project-column https://github.com/jamiemjennings/example-repo/projects/1#column-3945112 > output.pdf
 ```
 
-## Size Labels
+## Points Labels
 
-![Example Issue Card With Size](./img/example-issue-card-size.png)
+![Example Issue Card With Points](./img/example-issue-card-points.png)
 
-If you size your issues as part of your development process you can add the size label to the upper right corner by enabling the size labels using `--sizes` or setting `INCLUDE_SIZE_LABELS=true`. The following labels on the issue will be searched for and used if they are assigned to the issue:   `XS`, `S`, `M`, `L`, `XL`, `0`, `1/2`, `1`, `2`, `3`, `5`, `8`, `13`, `21`
+If you assign points to your issues as part of your development process you can add the points label to the upper right corner by using `--points` or setting `INCLUDE_POINTS_LABELS=true`. The following labels on the issue will be searched for and used if they are assigned to the issue:   `XS`, `S`, `M`, `L`, `XL`, `0`, `1/2`, `1`, `2`, `3`, `5`, `8`, `13`, `21`
