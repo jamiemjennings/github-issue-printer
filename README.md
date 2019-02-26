@@ -112,4 +112,8 @@ npm install
 node index.js --project-column https://github.com/jamiemjennings/example-repo/projects/1#column-3945112 > output.pdf
 ```
 
+## Size Labels
 
+![Example Issue Card With Size](./img/example-issue-card-size.png)
+
+If you size your issues as part of your development process you can add the size label to the upper right corner by enabling the size labels using `--sizes` or setting `INCLUDE_SIZE_LABELS=true`. The following labels on the issue will be searched for and used if they are assigned to the issue:   `XS`, `S`, `M`, `L`, `XL`, `0`, `1/2`, `1`, `2`, `3`, `5`, `8`, `13`, `21`
