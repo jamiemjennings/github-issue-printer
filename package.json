@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^2.6.1",
-    "commander": "^2.19.0",
+    "commander": "^3.0.0",
     "emoji-strip": "^1.0.1",
     "lodash": "^4.17.11",
     "pdfkit": "^0.9.0",
