@@ -13,7 +13,7 @@
   "author": "Jamie Jennings <jamiemjennings@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^3.0.0",
     "commander": "^2.19.0",
     "emoji-strip": "^1.0.1",
     "lodash": "^4.17.19",
